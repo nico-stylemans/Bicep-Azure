@@ -5,24 +5,34 @@ import argparse
 from pykwalify.core import Core
 
 ########## Usage ##########
-# usage: Convert-ParameterFile.py [-h] --parameter-file PARAMETER_FILE --schema-file SCHEMA_FILE
-
-# optional arguments:
-#   -h, --help            show this help message and exit
+# usage: Convert-ParameterFile.py [-h] --parameter-file PARAMETER_FILE --schema-file SCHEMA_FILE [--output-file OUTPUT_FILE]
+#
+# required parameters:
 #   --parameter-file PARAMETER_FILE
 #                         file location of the input yaml parameter file
 #   --schema-file SCHEMA_FILE
 #                         file location of the schema yaml file
+#
+# optional arguments:
+#   -h, --help            show this help message and exit
+#   --output-file OUTPUT_FILE
+#                         name of output file to generate
 
 ########## Argument check ##########
 parser = argparse.ArgumentParser()
 parser.add_argument("--parameter-file",type=str, help="file location of the input yaml parameter file",required=True)
 parser.add_argument("--schema-file",type=str, help="file location of the schema yaml file",required=True)
+parser.add_argument("--output-file",type=str, help="file location and name of the output file",required=False)
 args = parser.parse_args()
 
 parameter_file = args.parameter_file
 schema_file = args.schema_file
 
+if args.output_file is not None:
+    output_file = args.output_file
+else:
+    output_file = parameter_file.replace('.yml','.json')
+    
 ########## Validate existance of input files ##########
 print(f"Input parameter file is: {parameter_file}. Checking if it exists...")
 try:
@@ -68,5 +78,5 @@ with open(parameter_file) as f:
         "parameters": output_parameters
     }
 
-with open(parameter_file.replace('.yml','.json'), 'w') as outputFile:
+with open(output_file, 'w') as outputFile:
     json.dump(output_JSON, outputFile, indent=4)
